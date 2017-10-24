@@ -24,6 +24,15 @@ UserSchema.virtual('postCount').get(function(){
     return this.posts.length;
 });
 
+//middleware
+UserSchema.pre('remove', function(next) {
+    //use function keyword to maintain local 'this'
+    const BlogPost = mongoose.model('blogPost');
+    // $in operator checks to see if the _id equals the _id of this.blogPosts, then it executes the remove()
+    BlogPost.remove({ _id : { $in: this.blogPosts }})
+        .then(() => next());
+});
+
 const User = mongoose.model('user', UserSchema);
 
 module.exports = User;
